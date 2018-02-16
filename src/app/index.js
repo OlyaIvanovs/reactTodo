@@ -2,44 +2,61 @@ var React = require('react');
 var ReactDOM = require('react-dom');
 var createReactClass = require('create-react-class');
 
-class TodoItem extends React.Component {
-    constructor(props) {
-        super(props);
-        this.state = {}
-    }
-
-    render() {
-        return (
-            <li>
-                <div className="todo-item">
-                    <span className="todo-name">{this.props.item}</span>
-                </div>
-            </li>
-        )
-    }
-}
+import TodoItem from './todoitem'
+import AddItem from './additem'
+import styles from './css/index.css'
 
 class ToDoComponent extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            todos: ['eat', 'sleep', 'pray']
+            todos: ['eat', 'sleep', 'pray'],
+            btnMsg: "Add a new Todo"
         }
+        this.addTodo = this.addTodo.bind(this)
+        this.onDelete = this.onDelete.bind(this)
+        this.onAdd = this.onAdd.bind(this)
+    }
+
+    addTodo() {
+        this.setState(() => {
+            return {btnMsg: "A new todo was added"}
+        })
+    }
+
+    onAdd(item) {
+        var updatedTodos = this.state.todos
+        updatedTodos.push(item)
+        this.setState(() => {
+            return {
+                todos: updatedTodos
+            }
+        })
+    }
+
+    onDelete(item) {
+        var updatedTodos = this.state.todos.filter((todo, index) => {
+            return todo !== item
+        })
+        this.setState(() => {
+            return {todos: updatedTodos}
+        })
     }
 
     render() {
         var todos = this.state.todos.map((todo, index) => {
             return (
-                // <li key={index}>{todo}</li>
-                <TodoItem item={todo} key={index}/>
+                <TodoItem item={todo} key={index} onDelete={this.onDelete}/>
             )
         })
         return (
-            <div>
+            <div id="todo-list">
+                <button type="button" onClick={this.addTodo}>{this.state.btnMsg}</button>
                 <h1>
                     You have to do
                 </h1>
                 <ul>{todos}</ul>
+                <AddItem onAdd={this.onAdd} />
             </div>
         )
     }
